@@ -1,11 +1,11 @@
 module vga_display (
-    input        clk_sys,  // 
-    input        reset,      // Reset signal
+    input        clk_sys,     // System Clock  50MHz
+    input        reset,       // Reset signal
     output       VGA_HS,      // Horizontal sync
     output       VGA_VS,      // Vertical sync
-    output [5:0] VGA_R,      // VGA red output
-    output [5:0] VGA_G,      // VGA green output
-    output [5:0] VGA_B       // VGA blue output
+    output [5:0] VGA_R,       // VGA red output
+    output [5:0] VGA_G,       // VGA green output
+    output [5:0] VGA_B        // VGA blue output
 );
     // VGA 640x480 @ 60 Hz timing constants
     parameter H_DISPLAY   = 640;
