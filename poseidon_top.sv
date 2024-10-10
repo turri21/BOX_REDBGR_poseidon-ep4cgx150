@@ -81,7 +81,6 @@ module poseidon_top (
 	input         UART_RX
 );
 
-
 `ifdef VGA_8BIT
 localparam VGA_BITS = 8;
 `else
@@ -98,14 +97,13 @@ localparam SEP = "";
 
 vga_display vga_display
 (
- .clk_sys    (CLOCK_50),
+ .clk_sys (CLOCK_50),
  .VGA_HS  (VGA_HS),
  .VGA_VS  (VGA_VS),
- .VGA_R    (VGA_R),
- .VGA_G  (VGA_G),
+ .VGA_R   (VGA_R),
+ .VGA_G   (VGA_G),
  .VGA_B   (VGA_B),
 // .*
 );
-
 
 endmodule
