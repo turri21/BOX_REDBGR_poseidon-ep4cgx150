@@ -95,4 +95,5 @@ module vga_display (
     assign VGA_R = video_on ? (is_in_box ? 6'b111111 : 6'b111111) : 6'b000000;  // Red channel
     assign VGA_G = video_on ? (is_in_box ? 6'b111111 : 6'b000000) : 6'b000000;  // Green channel
     assign VGA_B = video_on ? (is_in_box ? 6'b111111 : 6'b000000) : 6'b000000;  // Blue channel
+	
 endmodule
