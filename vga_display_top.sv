@@ -20,14 +20,12 @@ module vga_display (
     parameter V_BACK      = 33;
     parameter V_TOTAL     = 525;
 	 
-	 // Box coordinates
+    // Box coordinates
     parameter BOX_X_START = 200;
     parameter BOX_X_END   = 400;
     parameter BOX_Y_START = 150;
     parameter BOX_Y_END   = 300;
-	 
-	 
-
+	
     reg [9:0] h_count = 0;  // Horizontal counter (0 to 799)
     reg [9:0] v_count = 0;  // Vertical counter (0 to 524)
 
@@ -54,16 +52,16 @@ module vga_display (
             end
         end
     end
-	 
-	 wire clk_vga, locked;
+	
+    wire clk_vga, locked;
  
-	 pll pll(
-		.areset(reset),
-		.inclk0(clk_sys),
-		.c0(clk_vga),     //25 MHz clock for 640x480 @ 60Hz
-		.locked(locked)
-	 );
-
+    pll pll(
+	.areset(reset),
+	.inclk0(clk_sys),
+	.c0(clk_vga),     //25 MHz clock for 640x480 @ 60Hz
+	.locked(locked)
+    );
+	
     // RGB signals coming from mist_video
     wire [5:0] r, g, b;
 
@@ -90,12 +88,10 @@ module vga_display (
         .vga_vsync()                // Not used (handled externally)
     );
 
-
-	 // Box color logic (draw a white box)
-	 wire is_in_box = (h_count >= BOX_X_START && h_count < BOX_X_END && 
-	 					 v_count >= BOX_Y_START && v_count < BOX_Y_END);
-
-	 // Output RGB to VGA
+    // Box color logic (draw a white box)
+    wire is_in_box = (h_count >= BOX_X_START && h_count < BOX_X_END && v_count >= BOX_Y_START && v_count < BOX_Y_END);
+	
+    // Output RGB to VGA
     assign VGA_R = video_on ? (is_in_box ? 6'b111111 : 6'b111111) : 6'b000000;  // Red channel
     assign VGA_G = video_on ? (is_in_box ? 6'b111111 : 6'b000000) : 6'b000000;  // Green channel
     assign VGA_B = video_on ? (is_in_box ? 6'b111111 : 6'b000000) : 6'b000000;  // Blue channel
