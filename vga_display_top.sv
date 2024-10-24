@@ -7,32 +7,35 @@ module vga_display (
     output [5:0] VGA_G,       // VGA green output
     output [5:0] VGA_B        // VGA blue output
 );
-    // VGA 640x480 @ 60 Hz timing constants
-    parameter H_DISPLAY   = 640;
-    parameter H_FRONT     = 16;
-    parameter H_SYNC      = 96;
-    parameter H_BACK      = 48;
-    parameter H_TOTAL     = 800;
 
-    parameter V_DISPLAY   = 480;
-    parameter V_FRONT     = 10;
-    parameter V_SYNC      = 2;
-    parameter V_BACK      = 33;
-    parameter V_TOTAL     = 525;
+
+    // VGA 800x600 @ 60 Hz timing constants
+    parameter H_DISPLAY   = 800;
+    parameter H_FRONT     = 90;   //Old value: 40 - Adjusted to remove a black bar on the left
+    parameter H_SYNC      = 128;
+    parameter H_BACK      = 38;   //Old value: 88 - Adjusted to remove a black bar on the left
+    parameter H_TOTAL     = 1056;
+
+    parameter V_DISPLAY   = 600;
+    parameter V_FRONT     = 1;
+    parameter V_SYNC      = 4;
+    parameter V_BACK      = 23;
+    parameter V_TOTAL     = 628;
 	 
     // Box coordinates
-    parameter BOX_X_START = 200;
-    parameter BOX_X_END   = 400;
-    parameter BOX_Y_START = 150;
-    parameter BOX_Y_END   = 300;
+    parameter BOX_X_START = 300;
+    parameter BOX_X_END   = 500;
+	 parameter BOX_Y_START = 200;
+	 parameter BOX_Y_END   = 400;
+ 
 	
-    reg [9:0] h_count = 0;  // Horizontal counter (0 to 799)
-    reg [9:0] v_count = 0;  // Vertical counter (0 to 524)
+    reg [10:0] h_count = 0;  // Horizontal counter (0 to 1055)
+    reg [9:0]  v_count = 0;  // Vertical counter (0 to 627)
 
     // Signals for video timing
     wire video_on = (h_count < H_DISPLAY) && (v_count < V_DISPLAY);
-    assign VGA_HS = (h_count >= H_DISPLAY + H_FRONT) && (h_count < H_DISPLAY + H_FRONT + H_SYNC);
-    assign VGA_VS = (v_count >= V_DISPLAY + V_FRONT) && (v_count < V_DISPLAY + V_FRONT + V_SYNC);
+    assign VGA_HS = ~((h_count >= H_DISPLAY + H_FRONT) && (h_count < H_DISPLAY + H_FRONT + H_SYNC));
+    assign VGA_VS = ~((v_count >= V_DISPLAY + V_FRONT) && (v_count < V_DISPLAY + V_FRONT + V_SYNC));
 
     // Clocking for horizontal and vertical timing
     always @(posedge clk_vga or posedge reset) begin
@@ -53,13 +56,13 @@ module vga_display (
         end
     end
 	
+    // PLL for 40 MHz clock
     wire clk_vga, locked;
- 
     pll pll(
-	.areset(reset),
-	.inclk0(clk_sys),
-	.c0(clk_vga),     //25 MHz clock for 640x480 @ 60Hz
-	.locked(locked)
+        .areset(reset),
+        .inclk0(clk_sys),
+        .c0(clk_vga),     // 40 MHz clock for 800x600 @ 60Hz
+        .locked(locked)
     );
 	
     // RGB signals coming from mist_video
@@ -67,7 +70,7 @@ module vga_display (
 
     // Instantiation of mist_video module
     mist_video #(.COLOR_DEPTH(6)) video_inst (
-        .clk_sys(clk_vga),          // 25 MHz clock
+        .clk_sys(clk_vga),          // 40 MHz clock
         .SPI_SCK(1'b0),             // Disable OSD
         .SPI_SS3(1'b0),             // Disable OSD
         .SPI_DI(1'b0),              // Disable OSD
